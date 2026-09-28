@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KidsFinance & Gear Tracker</title>
-  <!-- Tailwind CSS via CDN für modernes Styling -->
+
+  <!-- Modernes Flohmarktstand Favicon & App Icon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%234F46E5'/><path d='M8 26 L14 11 Q16 8 20 8 L44 8 Q48 8 50 11 L56 26 Z' fill='%23F43F5E'/><path d='M20 8 L17 26 L26 26 L28 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M38 8 L36 26 L45 26 L47 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M8 26 Q12 30 16 26 Q20 30 24 26 Q28 30 32 26 Q36 30 40 26 Q44 30 48 26 Q52 30 56 26' fill='%23E11D48'/><line x1='14' y1='26' x2='14' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><line x1='50' y1='26' x2='50' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><rect x='10' y='38' width='44' height='15' rx='3' fill='%23FFFFFF'/><rect x='10' y='38' width='44' height='4' rx='1' fill='%23E0E7FF'/><circle cx='23' cy='46' r='3.5' fill='%23F59E0B'/><rect x='34' y='43' width='14' height='6' rx='2' fill='%2310B981'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%234F46E5'/><path d='M8 26 L14 11 Q16 8 20 8 L44 8 Q48 8 50 11 L56 26 Z' fill='%23F43F5E'/><path d='M20 8 L17 26 L26 26 L28 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M38 8 L36 26 L45 26 L47 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M8 26 Q12 30 16 26 Q20 30 24 26 Q28 30 32 26 Q36 30 40 26 Q44 30 48 26 Q52 30 56 26' fill='%23E11D48'/><line x1='14' y1='26' x2='14' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><line x1='50' y1='26' x2='50' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><rect x='10' y='38' width='44' height='15' rx='3' fill='%23FFFFFF'/><rect x='10' y='38' width='44' height='4' rx='1' fill='%23E0E7FF'/><circle cx='23' cy='46' r='3.5' fill='%23F59E0B'/><rect x='34' y='43' width='14' height='6' rx='2' fill='%2310B981'/></svg>">
+
+  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14,8 +19,14 @@
   <header class="bg-indigo-600 text-white shadow-md">
     <div class="max-w-5xl mx-auto px-4 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex items-center space-x-3">
-        <i class="fa-solid fa-shapes text-2xl text-indigo-200"></i>
-        <h1 class="text-xl md:text-2xl font-bold tracking-tight">KidsGear Tracker</h1>
+        <!-- Passendes Flohmarktstand-Icon auch im Header -->
+        <span class="text-2xl text-indigo-200">
+          <i class="fa-solid fa-shop"></i>
+        </span>
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold tracking-tight">KidsGear Tracker</h1>
+          <p class="text-xs text-indigo-200 hidden sm:block">Flohmarkt, Kaufen & Verkaufen im Überblick</p>
+        </div>
       </div>
       
       <div class="flex items-center flex-wrap gap-2">
@@ -206,7 +217,7 @@
         container.innerHTML = `
           <div class="col-span-full text-center py-12 text-slate-400">
             <i class="fa-solid fa-box-open text-4xl mb-3"></i>
-            <p>Keine Einträge gefunden.</p>
+            <p>Keine Einträge vorhanden.</p>
           </div>
         `;
         return;
@@ -284,7 +295,7 @@
       soldFields.classList.toggle('hidden', !isSold);
     }
 
-    // Bildverarbeitung (Kompression mittels Canvas)
+    // Bildverarbeitung (Kompression)
     function handleImage(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -330,13 +341,11 @@
       const image = document.getElementById('item-image-base64').value;
 
       if (id) {
-        // Bearbeiten
         const index = items.findIndex(i => i.id === id);
         if (index !== -1) {
           items[index] = { ...items[index], title, desc, buyPrice, date, isSold, sellPrice, image: image || items[index].image };
         }
       } else {
-        // Neu anlegen
         items.push({
           id: Date.now().toString(),
           title, desc, buyPrice, date, isSold, sellPrice, image
@@ -377,10 +386,7 @@
       }
     }
 
-    // ==========================================
-    // BACKUP & RESTORE FUNKTIONEN
-    // ==========================================
-
+    // Backup & Restore
     function exportBackup() {
       if (items.length === 0) {
         alert('Es sind noch keine Artikel zum Exportieren vorhanden.');
@@ -420,7 +426,6 @@
           );
 
           if (shouldMerge) {
-            // Zusammenführen (Duplikate anhand der ID vermeiden)
             const existingIds = new Set(items.map(i => i.id));
             let addedCount = 0;
 
@@ -432,7 +437,6 @@
             });
             alert(`Erfolg: ${addedCount} neue Artikel wurden hinzugefügt!`);
           } else {
-            // Komplett ersetzen
             items = importedData;
             alert('Erfolg: Alle Daten wurden durch das Backup ersetzt!');
           }
@@ -441,14 +445,12 @@
         } catch (err) {
           alert('Fehler beim Einlesen der Backup-Datei: ' + err.message);
         } finally {
-          // Input zurücksetzen, damit dieselbe Datei bei Bedarf erneut gewählt werden kann
           event.target.value = '';
         }
       };
       reader.readAsText(file);
     }
 
-    // Initiales Rendern
     calculateTotals();
     renderItems();
   </script>
