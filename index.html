@@ -4,427 +4,429 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KidsFinance & Gear Tracker</title>
-
-  <!-- Modernes Flohmarktstand Favicon & App Icon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%234F46E5'/><path d='M8 26 L14 11 Q16 8 20 8 L44 8 Q48 8 50 11 L56 26 Z' fill='%23F43F5E'/><path d='M20 8 L17 26 L26 26 L28 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M38 8 L36 26 L45 26 L47 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M8 26 Q12 30 16 26 Q20 30 24 26 Q28 30 32 26 Q36 30 40 26 Q44 30 48 26 Q52 30 56 26' fill='%23E11D48'/><line x1='14' y1='26' x2='14' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><line x1='50' y1='26' x2='50' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><rect x='10' y='38' width='44' height='15' rx='3' fill='%23FFFFFF'/><rect x='10' y='38' width='44' height='4' rx='1' fill='%23E0E7FF'/><circle cx='23' cy='46' r='3.5' fill='%23F59E0B'/><rect x='34' y='43' width='14' height='6' rx='2' fill='%2310B981'/></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%234F46E5'/><path d='M8 26 L14 11 Q16 8 20 8 L44 8 Q48 8 50 11 L56 26 Z' fill='%23F43F5E'/><path d='M20 8 L17 26 L26 26 L28 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M38 8 L36 26 L45 26 L47 8 Z' fill='%23FFFFFF' opacity='0.9'/><path d='M8 26 Q12 30 16 26 Q20 30 24 26 Q28 30 32 26 Q36 30 40 26 Q44 30 48 26 Q52 30 56 26' fill='%23E11D48'/><line x1='14' y1='26' x2='14' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><line x1='50' y1='26' x2='50' y2='52' stroke='%23C7D2FE' stroke-width='3' stroke-linecap='round'/><rect x='10' y='38' width='44' height='15' rx='3' fill='%23FFFFFF'/><rect x='10' y='38' width='44' height='4' rx='1' fill='%23E0E7FF'/><circle cx='23' cy='46' r='3.5' fill='%23F59E0B'/><rect x='34' y='43' width='14' height='6' rx='2' fill='%2310B981'/></svg>">
-
-  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
 
-  <!-- Toast Benachrichtigung -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
-    <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-    <span id="toast-message" class="text-sm font-medium">In die Zwischenablage kopiert!</span>
-  </div>
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none text-sm font-medium"></div>
 
-  <!-- Header -->
-  <header class="bg-indigo-600 text-white shadow-md">
-    <div class="max-w-5xl mx-auto px-4 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div class="flex items-center space-x-3">
-        <span class="text-2xl text-indigo-200">
-          <i class="fa-solid fa-shop"></i>
-        </span>
-        <div>
-          <h1 class="text-xl md:text-2xl font-bold tracking-tight">KidsGear Tracker</h1>
-          <p class="text-xs text-indigo-200 hidden sm:block">Flohmarkt, Kaufen & Verkaufen im Überblick</p>
-        </div>
+  <header class="bg-indigo-600 text-white shadow-md relative z-30">
+    <div class="max-w-5xl mx-auto px-4 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold tracking-tight">KidsGear Tracker</h1>
+        <p class="text-xs text-indigo-200">Flohmarkt, Kaufen & Verkaufen</p>
       </div>
       
       <div class="flex items-center flex-wrap gap-2">
-        <button onclick="exportBackup()" title="Backup als Datei herunterladen" class="bg-indigo-700 hover:bg-indigo-800 text-indigo-100 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-download"></i> Backup
-        </button>
-        <button onclick="triggerImport()" title="Backup-Datei wiederherstellen" class="bg-indigo-700 hover:bg-indigo-800 text-indigo-100 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-upload"></i> Import
-        </button>
-        <input type="file" id="import-file-input" accept=".json" class="hidden" onchange="handleImportFile(event)">
-
-        <button onclick="openModal()" class="bg-white text-indigo-600 hover:bg-indigo-50 font-semibold px-4 py-2 rounded-lg shadow transition flex items-center gap-2 text-sm ml-auto sm:ml-2">
-          <i class="fa-solid fa-plus"></i> Neuer Eintrag
-        </button>
+        <input type="file" id="import-file" accept=".json,application/json" class="hidden">
+        <button id="btn-export" class="bg-indigo-700 hover:bg-indigo-800 text-indigo-100 px-3 py-1.5 rounded-lg text-sm font-medium transition active:scale-95">Backup</button>
+        <button id="btn-import" class="bg-indigo-700 hover:bg-indigo-800 text-indigo-100 px-3 py-1.5 rounded-lg text-sm font-medium transition active:scale-95">Import</button>
+        <button id="btn-add" class="bg-white text-indigo-600 hover:bg-indigo-50 font-semibold px-4 py-1.5 rounded-lg shadow text-sm ml-auto sm:ml-2 active:scale-95">+ Neuer Eintrag</button>
       </div>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto px-4 mt-6 space-y-6">
-
-    <!-- KPI Dashboard -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase font-bold tracking-wider text-slate-400">Ausgaben (Gekauft)</p>
-          <h2 id="total-spent" class="text-2xl font-extrabold text-rose-500 mt-1">0,00 €</h2>
-        </div>
-        <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center text-xl">
-          <i class="fa-solid fa-arrow-down"></i>
-        </div>
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs uppercase font-bold tracking-wider text-slate-400">Ausgaben</p>
+        <h2 id="total-spent" class="text-2xl font-extrabold text-rose-500 mt-1">0,00 €</h2>
       </div>
-
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase font-bold tracking-wider text-slate-400">Einnahmen (Verkauft)</p>
-          <h2 id="total-earned" class="text-2xl font-extrabold text-emerald-500 mt-1">0,00 €</h2>
-        </div>
-        <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl">
-          <i class="fa-solid fa-arrow-up"></i>
-        </div>
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs uppercase font-bold tracking-wider text-slate-400">Einnahmen</p>
+        <h2 id="total-earned" class="text-2xl font-extrabold text-emerald-500 mt-1">0,00 €</h2>
       </div>
-
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase font-bold tracking-wider text-slate-400">Netto-Kosten (Differenz)</p>
-          <h2 id="total-balance" class="text-2xl font-extrabold text-slate-700 mt-1">0,00 €</h2>
-        </div>
-        <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center text-xl">
-          <i class="fa-solid fa-scale-balanced"></i>
-        </div>
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs uppercase font-bold tracking-wider text-slate-400">Netto-Kosten</p>
+        <h2 id="total-balance" class="text-2xl font-extrabold text-slate-700 mt-1">0,00 €</h2>
       </div>
     </div>
 
-    <!-- Filter & Suche -->
     <div class="flex flex-col md:flex-row gap-3 items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-      <div class="relative w-full md:w-80">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
-        <input type="text" id="search-input" oninput="renderItems()" placeholder="Artikel oder Details suchen..." 
-               class="w-full pl-9 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border-slate-300">
-      </div>
-      <div class="flex gap-2 w-full md:w-auto">
-        <select id="status-filter" onchange="renderItems()" class="w-full md:w-auto px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 border-slate-300 bg-white">
-          <option value="all">Alle Artikel anzeigen</option>
-          <option value="active">Nur in Besitz</option>
-          <option value="sold">Nur Verkaufte</option>
-        </select>
-      </div>
+      <input type="text" id="search" placeholder="Artikel suchen..." class="w-full md:w-80 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border-slate-300">
+      <select id="filter" class="w-full md:w-auto px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 border-slate-300 bg-white">
+        <option value="all">Alle</option>
+        <option value="active">Im Besitz</option>
+        <option value="sold">Verkauft</option>
+      </select>
     </div>
 
-    <!-- Grid -->
-    <div id="items-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
   </main>
 
-  <!-- Modal: Artikel bearbeiten/erstellen -->
-  <div id="item-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl relative max-h-[90vh] overflow-y-auto">
-      <h3 id="modal-title" class="text-lg font-bold mb-4">Neuen Artikel erfassen</h3>
-      
-      <form id="item-form" onsubmit="saveItem(event)" class="space-y-4">
+  <!-- Modal: Neuer / Bearbeiten -->
+  <div id="item-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+      <h3 id="modal-title" class="text-lg font-bold mb-4">Neuer Artikel</h3>
+      <form id="item-form" class="space-y-4">
         <input type="hidden" id="item-id">
-
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Titel / Artikelname *</label>
-          <input type="text" id="item-title" required placeholder="z. B. Winterjacke Gr. 98, Laufrad..." class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Artikelname *</label>
+          <input type="text" id="item-title" required class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500">
         </div>
-
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Beschreibung / Notizen / Zustand</label>
-          <textarea id="item-desc" rows="2" placeholder="Zustand (sehr gut, neuwertig?), Größe, Marke..." class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500"></textarea>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Beschreibung / Zustand</label>
+          <textarea id="item-desc" rows="2" class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500"></textarea>
         </div>
-
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Kaufpreis (€) *</label>
-            <input type="number" id="item-buy-price" step="0.01" min="0" required placeholder="0.00" class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500">
+            <input type="number" id="item-buy" step="0.01" min="0" required class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500">
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Kaufdatum</label>
             <input type="date" id="item-date" class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500">
           </div>
         </div>
-
-        <!-- Foto Upload -->
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Foto</label>
-          <input type="file" id="item-image" accept="image/*" onchange="handleImage(event)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-          <input type="hidden" id="item-image-base64">
-          <div id="image-preview-wrapper" class="mt-2 hidden relative w-24 h-24 rounded-lg overflow-hidden border">
-            <img id="image-preview" src="" alt="Vorschau" class="w-full h-full object-cover">
-            <button type="button" onclick="removeImage()" class="absolute top-1 right-1 bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button>
+          <input type="file" id="item-img-input" accept="image/*" class="w-full text-sm text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+          <input type="hidden" id="item-img-val">
+          <div id="img-preview-box" class="mt-2 relative w-20 h-20 rounded-lg overflow-hidden border hidden">
+            <img id="img-preview" src="" class="w-full h-full object-cover">
+            <button type="button" id="btn-del-img" class="absolute top-1 right-1 bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button>
           </div>
         </div>
-
-        <!-- Kleinanzeigen Link (optional) -->
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Kleinanzeigen-Link (optional)</label>
-          <input type="url" id="item-ad-link" placeholder="https://www.kleinanzeigen.de/s-anzeige/..." class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm">
+          <label class="block text-sm font-medium text-slate-700 mb-1">Kleinanzeigen-Link</label>
+          <input type="url" id="item-link" class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm">
         </div>
-
-        <!-- Verkauf-Sektion -->
-        <div class="border-t pt-4">
-          <div class="flex items-center gap-2 mb-3">
-            <input type="checkbox" id="item-is-sold" onchange="toggleSoldInputs()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4">
-            <label for="item-is-sold" class="text-sm font-semibold text-slate-700 cursor-pointer">Bereits wieder verkauft?</label>
-          </div>
-
-          <div id="sold-fields" class="hidden">
+        <div class="border-t pt-3">
+          <label class="flex items-center gap-2 cursor-pointer mb-2">
+            <input type="checkbox" id="item-sold" class="rounded text-indigo-600 w-4 h-4">
+            <span class="text-sm font-semibold text-slate-700">Verkauft</span>
+          </label>
+          <div id="sold-box" class="hidden">
             <label class="block text-sm font-medium text-slate-700 mb-1">Verkaufspreis (€)</label>
-            <input type="number" id="item-sell-price" step="0.01" min="0" placeholder="0.00" class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500">
+            <input type="number" id="item-sell" step="0.01" min="0" class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500">
           </div>
         </div>
-
-        <!-- Actions -->
-        <div class="flex justify-end gap-2 pt-3">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg hover:bg-slate-50 font-medium">Abbrechen</button>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="btn-close-modal" class="px-4 py-2 border rounded-lg hover:bg-slate-50 font-medium">Abbrechen</button>
           <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">Speichern</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: Kleinanzeigen Helfer -->
-  <div id="ad-helper-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl relative max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-start mb-4">
-        <div class="flex items-center gap-2">
-          <span class="w-7 h-7 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center font-bold text-sm">K</span>
-          <h3 class="text-lg font-bold text-slate-800">Kleinanzeigen-Assistent</h3>
-        </div>
-        <button onclick="closeAdModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+  <!-- Modal: Kleinanzeigen -->
+  <div id="ad-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-slate-800">Kleinanzeigen-Assistent</h3>
+        <button id="btn-close-ad" class="text-slate-400 text-lg hover:text-slate-600">✕</button>
       </div>
-
-      <p class="text-xs text-slate-500 mb-4">Kopiere Titel & Beschreibung mit einem Klick und lade das Foto direkt für die Kleinanzeigen-Aufgabe herunter:</p>
-
-      <div class="space-y-4">
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="text-xs font-bold uppercase text-slate-400">Titel</label>
-            <button onclick="copyToClipboard('ad-helper-title', this)" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold"><i class="fa-regular fa-copy"></i> Kopieren</button>
-          </div>
-          <input type="text" id="ad-helper-title" readonly class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-sm font-medium">
+      <div>
+        <div class="flex justify-between text-xs mb-1">
+          <span class="font-bold text-slate-400 uppercase">Titel</span>
+          <button id="btn-copy-title" class="text-indigo-600 font-semibold hover:underline">Kopieren</button>
         </div>
-
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="text-xs font-bold uppercase text-slate-400">Generierter Anzeigentext</label>
-            <button onclick="copyToClipboard('ad-helper-desc', this)" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold"><i class="fa-regular fa-copy"></i> Kopieren</button>
-          </div>
-          <textarea id="ad-helper-desc" rows="6" readonly class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-sm"></textarea>
+        <input type="text" id="ad-title" readonly class="w-full bg-slate-50 border rounded-lg px-3 py-1.5 text-sm font-medium">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1">
+          <span class="font-bold text-slate-400 uppercase">Anzeigentext</span>
+          <button id="btn-copy-desc" class="text-indigo-600 font-semibold hover:underline">Kopieren</button>
         </div>
-
-        <!-- Foto Download Bereich -->
-        <div id="ad-helper-image-area" class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <img id="ad-helper-img" src="" class="w-12 h-12 rounded object-cover border">
-            <div>
-              <p class="text-xs font-bold text-slate-700">Foto vorhanden</p>
-              <p class="text-[11px] text-slate-400">Direkt auf dein Gerät speichern</p>
-            </div>
-          </div>
-          <a id="ad-helper-download-btn" download="kleinanzeigen_foto.jpg" href="#" class="px-3 py-1.5 bg-white border border-slate-300 text-xs font-semibold rounded-lg hover:bg-slate-100 flex items-center gap-1">
-            <i class="fa-solid fa-download"></i> Foto laden
-          </a>
-        </div>
-
-        <div class="pt-2 flex flex-col sm:flex-row gap-2">
-          <a href="https://www.kleinanzeigen.de/p-anzeige-aufgeben.html" target="_blank" rel="noopener noreferrer" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-center text-sm shadow transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Zu Kleinanzeigen springen
-          </a>
-          <button onclick="closeAdModal()" class="px-4 py-2 border rounded-xl hover:bg-slate-50 text-sm font-medium">Schließen</button>
-        </div>
+        <textarea id="ad-desc" rows="6" readonly class="w-full bg-slate-50 border rounded-lg px-3 py-2 text-sm"></textarea>
+      </div>
+      <div id="ad-img-box" class="p-3 bg-slate-50 border rounded-xl flex items-center justify-between hidden">
+        <img id="ad-img" src="" class="w-12 h-12 rounded object-cover border">
+        <a id="ad-dl" download="foto.jpg" href="#" class="px-3 py-1 bg-white border text-xs font-semibold rounded-lg hover:bg-slate-100">Foto laden</a>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <a href="https://www.kleinanzeigen.de/p-anzeige-aufgeben.html" target="_blank" rel="noopener noreferrer" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-center text-sm">Zu Kleinanzeigen</a>
+        <button id="btn-cancel-ad" class="px-4 py-2 border rounded-xl hover:bg-slate-50 text-sm">Schließen</button>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'kids_gear_tracker_data';
-    let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    const KEY = 'kids_gear_tracker_data';
+    let items = [];
+    try { items = JSON.parse(localStorage.getItem(KEY)) || []; } catch(e) { items = []; }
 
-    const formatEUR = (num) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(num);
+    const eur = (n) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(n || 0);
 
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      const msg = document.getElementById('toast-message');
-      msg.innerText = message;
-      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-      }, 2500);
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2000);
     }
 
-    function saveToStorage() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-      calculateTotals();
-      renderItems();
+    function save() {
+      localStorage.setItem(KEY, JSON.stringify(items));
+      calc();
+      render();
     }
 
-    function calculateTotals() {
-      let spent = 0;
-      let earned = 0;
+    function calc() {
+      const totals = items.reduce((acc, i) => {
+        acc.spent += (+i.buy || 0);
+        if (i.sold) acc.earned += (+i.sell || 0);
+        return acc;
+      }, { spent: 0, earned: 0 });
 
-      items.forEach(item => {
-        spent += parseFloat(item.buyPrice || 0);
-        if (item.isSold) {
-          earned += parseFloat(item.sellPrice || 0);
-        }
+      document.getElementById('total-spent').innerText = eur(totals.spent);
+      document.getElementById('total-earned').innerText = eur(totals.earned);
+      document.getElementById('total-balance').innerText = eur(totals.spent - totals.earned);
+    }
+
+    function render() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const f = document.getElementById('filter').value;
+      const g = document.getElementById('grid');
+
+      const filtered = items.filter(i => {
+        if (f === 'active' && i.sold) return false;
+        if (f === 'sold' && !i.sold) return false;
+        return (i.title || '').toLowerCase().includes(q) || (i.desc || '').toLowerCase().includes(q);
       });
 
-      const net = spent - earned;
-      document.getElementById('total-spent').innerText = formatEUR(spent);
-      document.getElementById('total-earned').innerText = formatEUR(earned);
-      document.getElementById('total-balance').innerText = formatEUR(net);
-    }
-
-    function renderItems() {
-      const container = document.getElementById('items-grid');
-      const search = document.getElementById('search-input').value.toLowerCase();
-      const filter = document.getElementById('status-filter').value;
-
-      container.innerHTML = '';
-
-      const filtered = items.filter(item => {
-        const matchesSearch = item.title.toLowerCase().includes(search) || (item.desc && item.desc.toLowerCase().includes(search));
-        if (!matchesSearch) return false;
-
-        if (filter === 'active') return !item.isSold;
-        if (filter === 'sold') return item.isSold;
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full text-center py-12 text-slate-400">
-            <i class="fa-solid fa-box-open text-4xl mb-3"></i>
-            <p>Keine Einträge vorhanden.</p>
-          </div>
-        `;
+      if (!filtered.length) {
+        g.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">Keine Einträge vorhanden.</div>';
         return;
       }
 
-      filtered.forEach(item => {
-        const card = document.createElement('div');
-        card.className = "bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between";
-
-        const imagePlaceholder = item.image 
-          ? `<img src="${item.image}" alt="${item.title}" class="w-full h-44 object-cover">`
-          : `<div class="w-full h-44 bg-slate-100 flex items-center justify-center text-slate-300"><i class="fa-regular fa-image text-3xl"></i></div>`;
-
-        const badge = item.isSold 
-          ? `<span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold">Verkauft (+${formatEUR(item.sellPrice)})</span>`
-          : `<span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-semibold">Im Besitz</span>`;
-
-        card.innerHTML = `
+      g.innerHTML = filtered.map(i => `
+        <div class="bg-white border rounded-xl overflow-hidden shadow-sm flex flex-col justify-between">
           <div>
-            ${imagePlaceholder}
+            ${i.img ? `<img src="${i.img}" class="w-full h-44 object-cover">` : '<div class="w-full h-44 bg-slate-100 flex items-center justify-center text-slate-300 text-sm">Kein Foto</div>'}
             <div class="p-4">
               <div class="flex justify-between items-start mb-2">
-                <h3 class="font-bold text-lg text-slate-800 leading-tight">${item.title}</h3>
-                ${badge}
-              </div>
-              <p class="text-sm text-slate-500 mb-3 line-clamp-2">${item.desc || '<em>Keine Beschreibung</em>'}</p>
-              
-              <div class="text-xs text-slate-400 flex justify-between py-1 border-t">
-                <span>Gekauft für:</span>
-                <span class="font-semibold text-slate-700">${formatEUR(item.buyPrice)}</span>
-              </div>
-              ${item.isSold ? `
-              <div class="text-xs text-slate-400 flex justify-between py-1 border-t">
-                <span>Differenz (Gewinn/Verlust):</span>
-                <span class="font-semibold ${item.sellPrice - item.buyPrice >= 0 ? 'text-emerald-600' : 'text-rose-500'}">
-                  ${formatEUR(item.sellPrice - item.buyPrice)}
+                <h3 class="font-bold text-slate-800 leading-tight">${i.title}</h3>
+                <span class="${i.sold ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'} text-xs px-2 py-0.5 rounded-full font-bold">
+                  ${i.sold ? `Verkauft (+${eur(i.sell)})` : 'Im Besitz'}
                 </span>
               </div>
-              ` : ''}
-
-              ${item.adLink ? `
-              <div class="mt-2 pt-2 border-t text-xs">
-                <a href="${item.adLink}" target="_blank" class="text-amber-600 hover:underline flex items-center gap-1 font-semibold">
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i> Zu deiner Kleinanzeige
-                </a>
+              <p class="text-sm text-slate-500 mb-3">${i.desc || '<em>Keine Beschreibung</em>'}</p>
+              <div class="text-xs text-slate-400 flex justify-between py-1 border-t">
+                <span>Kaufpreis:</span><span class="font-semibold text-slate-700">${eur(i.buy)}</span>
+              </div>
+              ${i.sold ? `
+              <div class="text-xs text-slate-400 flex justify-between py-1 border-t">
+                <span>Differenz:</span><span class="font-semibold ${i.sell - i.buy >= 0 ? 'text-emerald-600' : 'text-rose-500'}">${eur(i.sell - i.buy)}</span>
               </div>` : ''}
+              ${i.link ? `<div class="mt-2 pt-2 border-t text-xs"><a href="${i.link}" target="_blank" rel="noopener noreferrer" class="text-amber-600 hover:underline font-semibold">Kleinanzeige öffnen</a></div>` : ''}
             </div>
           </div>
-          
-          <div class="p-3 border-t bg-slate-50 flex items-center justify-between flex-wrap gap-2">
+          <div class="p-3 border-t bg-slate-50 flex items-center justify-between">
             <div class="flex items-center gap-1.5">
-              ${!item.isSold ? `
-                <!-- WhatsApp Verkauf-Button -->
-                <button onclick="copyWhatsAppMessage('${item.id}', this)" title="Kurznachricht für WhatsApp kopieren" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                  <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> WhatsApp
-                </button>
-
-                <!-- Kleinanzeigen Button -->
-                <button onclick="openAdHelper('${item.id}')" title="Als Kleinanzeige vorbereiten" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                  <i class="fa-solid fa-bullhorn text-amber-600"></i> Kleinanzeige
-                </button>
-              ` : '<span></span>'}
+              ${!i.sold ? `
+                <button onclick="shareWA('${i.id}')" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold px-2 py-1 rounded">WhatsApp</button>
+                <button onclick="openAd('${i.id}')" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold px-2 py-1 rounded">Kleinanzeige</button>
+              ` : ''}
             </div>
-
-            <div class="flex items-center gap-1 ml-auto">
-              <button onclick="editItem('${item.id}')" title="Bearbeiten" class="text-slate-500 hover:text-indigo-600 p-1.5 text-sm font-medium"><i class="fa-regular fa-pen-to-square"></i></button>
-              <button onclick="deleteItem('${item.id}')" title="Löschen" class="text-slate-400 hover:text-rose-500 p-1.5 text-sm font-medium"><i class="fa-regular fa-trash-can"></i></button>
+            <div class="flex items-center gap-2 ml-auto">
+              <button onclick="editItem('${i.id}')" class="text-slate-500 hover:text-indigo-600 text-sm font-medium">Bearbeiten</button>
+              <button onclick="deleteItem('${i.id}')" class="text-slate-400 hover:text-rose-500 text-sm">✕</button>
             </div>
           </div>
-        `;
-        container.appendChild(card);
-      });
+        </div>
+      `).join('');
     }
 
-    // Modal & Formular Logik
-    const modal = document.getElementById('item-modal');
-    
-    function openModal() {
-      document.getElementById('item-form').reset();
-      document.getElementById('item-id').value = '';
-      document.getElementById('item-image-base64').value = '';
-      document.getElementById('image-preview-wrapper').classList.add('hidden');
-      document.getElementById('modal-title').innerText = 'Neuen Artikel erfassen';
-      document.getElementById('item-date').value = new Date().toISOString().split('T')[0];
-      toggleSoldInputs();
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+    // Modal Control
+    const mItem = document.getElementById('item-modal');
+    const mAd = document.getElementById('ad-modal');
+
+    function toggleModal(open, isEdit = false) {
+      mItem.classList.toggle('hidden', !open);
+      mItem.classList.toggle('flex', open);
+      if (open && !isEdit) {
+        document.getElementById('item-form').reset();
+        document.getElementById('item-id').value = '';
+        document.getElementById('item-img-val').value = '';
+        document.getElementById('img-preview-box').classList.add('hidden');
+        document.getElementById('sold-box').classList.add('hidden');
+        document.getElementById('modal-title').innerText = 'Neuer Artikel';
+        document.getElementById('item-date').value = new Date().toISOString().split('T')[0];
+      }
     }
 
-    function closeModal() {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+    function editItem(id) {
+      const i = items.find(x => x.id === id);
+      if (!i) return;
+      toggleModal(true, true);
+      document.getElementById('modal-title').innerText = 'Artikel bearbeiten';
+      document.getElementById('item-id').value = i.id;
+      document.getElementById('item-title').value = i.title;
+      document.getElementById('item-desc').value = i.desc || '';
+      document.getElementById('item-buy').value = i.buy;
+      document.getElementById('item-date').value = i.date || '';
+      document.getElementById('item-link').value = i.link || '';
+      document.getElementById('item-sold').checked = !!i.sold;
+      document.getElementById('item-sell').value = i.sell || '';
+      document.getElementById('sold-box').classList.toggle('hidden', !i.sold);
+
+      if (i.img) {
+        document.getElementById('item-img-val').value = i.img;
+        document.getElementById('img-preview').src = i.img;
+        document.getElementById('img-preview-box').classList.remove('hidden');
+      } else {
+        document.getElementById('item-img-val').value = '';
+        document.getElementById('img-preview-box').classList.add('hidden');
+      }
     }
 
-    function toggleSoldInputs() {
-      const isSold = document.getElementById('item-is-sold').checked;
-      const soldFields = document.getElementById('sold-fields');
-      soldFields.classList.toggle('hidden', !isSold);
+    function deleteItem(id) {
+      if (confirm('Artikel löschen?')) {
+        items = items.filter(x => x.id !== id);
+        save();
+        toast('Artikel gelöscht');
+      }
     }
 
-    function handleImage(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    // WhatsApp Copy
+    function shareWA(id) {
+      const i = items.find(x => x.id === id);
+      if (!i) return;
+      const text = `🧸 *${i.title}*\nℹ️ *Zustand:* ${i.desc || 'Sehr gepflegt'}\n💰 *Preis:* ${i.sell > 0 ? eur(i.sell) : eur(i.buy) + ' VB'}\n📍 *Abholung:* Treuchtlingen`;
+      navigator.clipboard.writeText(text).then(() => toast('WhatsApp-Text kopiert!'));
+    }
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
+    // Kleinanzeigen Modal
+    function openAd(id) {
+      const i = items.find(x => x.id === id);
+      if (!i) return;
+      document.getElementById('ad-title').value = i.title;
+      document.getElementById('ad-desc').value = `Hallo zusammen,\n\nwir verkaufen aus unserem Kinderhaushalt:\n${i.title}\n\nBeschreibung / Zustand:\n${i.desc || 'Sehr gepflegter Zustand.'}\n\nWir sind ein tierfreier Nichtraucherhaushalt.\nAbholung in Treuchtlingen bevorzugt. Versand bei Kostenübernahme möglich.\n\nPrivatverkauf: Keine Garantie, Rücknahme oder Gewährleistung.`;
+
+      const box = document.getElementById('ad-img-box');
+      if (i.img) {
+        box.classList.remove('hidden');
+        document.getElementById('ad-img').src = i.img;
+        const dl = document.getElementById('ad-dl');
+        dl.href = i.img;
+        dl.download = `${i.title.replace(/\s+/g, '_')}.jpg`;
+      } else {
+        box.classList.add('hidden');
+      }
+
+      mAd.classList.remove('hidden');
+      mAd.classList.add('flex');
+    }
+
+    // Event Listener setup
+    document.getElementById('btn-add').onclick = () => toggleModal(true);
+    document.getElementById('btn-close-modal').onclick = () => toggleModal(false);
+    document.getElementById('item-sold').onchange = (e) => document.getElementById('sold-box').classList.toggle('hidden', !e.target.checked);
+    document.getElementById('search').oninput = render;
+    document.getElementById('filter').onchange = render;
+
+    // Bild-Upload mit Canvas Resizing
+    document.getElementById('item-img-input').onchange = (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = (evt) => {
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 500;
-          const scaleSize = MAX_WIDTH / img.width;
-          canvas.width = (img.width > MAX_WIDTH) ? MAX_WIDTH : img.width;
-          canvas.height = (img.width > MAX_WIDTH) ? (img.height * scaleSize) : img.height;
-          
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          
-          const compressed = canvas.toDataURL('image/jpeg', 0.7);
-          document.getElementById('item-image-base64').value = compressed;
-          document.getElementById('image-preview').src = compressed;
-          document.getElementById('image-preview-wrapper').classList.remove('hidden');
+          const c = document.createElement('canvas');
+          const max = 500;
+          const s = max / img.width;
+          c.width = img.width > max ? max : img.width;
+          c.height = img.width > max ? img.height * s : img.height;
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const data = c.toDataURL('image/jpeg', 0.7);
+          document.getElementById('item-img-val').value = data;
+          document.getElementById('img-preview').src = data;
+          document.getElementById('img-preview-box').classList.remove('hidden');
         };
-        img.src = event.target.result;
+        img.src = evt.target.result;
       };
-      reader.readAsDataURL(file);
-    }
+      r.readAsDataURL(f);
+    };
 
-    function removeImage() {
-      document.getElementById('item-image').value = '';
-      document.getElementById('item-image-base64').value = '';
-      document.getElementById('image-preview-wrapper').classList.add('hidden');
-    }
+    document.getElementById('btn-del-img').onclick = () => {
+      document.getElementById('item-img-input').value = '';
+      document.getElementById('item-img-val').value = '';
+      document.getElementById('img-preview-box').classList.add('hidden');
+    };
 
-    function saveItem(e) {
+    // Form Save
+    document.getElementById('item-form').onsubmit = (e) => {
       e.preventDefault();
       const id = document.getElementById('item-id').value;
-      const title = document.getElementById('item-title').value;
-      const desc = document.getElementById('item-desc').value;
-      const buyPrice = parseFloat(document.getElementById('item-buy-price').value) || 0;
-      const date = document.getElementById('item-date').value;
-      const adLink = document.getElementById
+      const data = {
+        id: id || Date.now().toString(),
+        title: document.getElementById('item-title').value.trim(),
+        desc: document.getElementById('item-desc').value.trim(),
+        buy: parseFloat(document.getElementById('item-buy').value) || 0,
+        date: document.getElementById('item-date').value,
+        link: document.getElementById('item-link').value.trim(),
+        sold: document.getElementById('item-sold').checked,
+        sell: parseFloat(document.getElementById('item-sell').value) || 0,
+        img: document.getElementById('item-img-val').value
+      };
+
+      if (id) {
+        const idx = items.findIndex(x => x.id === id);
+        if (idx !== -1) items[idx] = data;
+      } else {
+        items.push(data);
+      }
+
+      save();
+      toggleModal(false);
+      toast('Gespeichert!');
+    };
+
+    // Backup & Restore
+    document.getElementById('btn-export').onclick = () => {
+      if (!items.length) return alert('Keine Daten zum Exportieren vorhanden.');
+      const a = document.createElement('a');
+      const blob = new Blob([JSON.stringify(items)], { type: 'application/json' });
+      a.href = URL.createObjectURL(blob);
+      a.download = `kidsgear_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('Backup erstellt!');
+    };
+
+    const fileIn = document.getElementById('import-file');
+    document.getElementById('btn-import').onclick = () => { fileIn.value = ''; fileIn.click(); };
+    fileIn.onchange = (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = (evt) => {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (!Array.isArray(parsed)) throw new Error();
+          if (confirm('OK = Daten anhängen (Mergen)\nAbbrechen = Vorhandenes komplett ERSETZEN')) {
+            const ids = new Set(items.map(x => x.id));
+            parsed.forEach(p => { if (!ids.has(p.id)) items.push(p); });
+          } else {
+            items = parsed;
+          }
+          save();
+          toast('Import erfolgreich!');
+        } catch(err) {
+          alert('Ungültige Backup-Datei.');
+        }
+      };
+      r.readAsText(f);
+    };
+
+    // Kleinanzeigen Actions
+    const closeAd = () => { mAd.classList.add('hidden'); mAd.classList.remove('flex'); };
+    document.getElementById('btn-close-ad').onclick = closeAd;
+    document.getElementById('btn-cancel-ad').onclick = closeAd;
+    document.getElementById('btn-copy-title').onclick = () => {
+      navigator.clipboard.writeText(document.getElementById('ad-title').value);
+      toast('Titel kopiert!');
+    };
+    document.getElementById('btn-copy-desc').onclick = () => {
+      navigator.clipboard.writeText(document.getElementById('ad-desc').value);
+      toast('Text kopiert!');
+    };
+
+    // Init
+    calc();
+    render();
+  </script>
+</body>
+</html>
