@@ -15,6 +15,12 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
 
+  <!-- Toast Benachrichtigung -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+    <span id="toast-message" class="text-sm font-medium">In die Zwischenablage kopiert!</span>
+  </div>
+
   <!-- Header -->
   <header class="bg-indigo-600 text-white shadow-md">
     <div class="max-w-5xl mx-auto px-4 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -113,8 +119,8 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Beschreibung / Notizen</label>
-          <textarea id="item-desc" rows="2" placeholder="Zustand, Größe, Marke, wo verstaut..." class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500"></textarea>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Beschreibung / Notizen / Zustand</label>
+          <textarea id="item-desc" rows="2" placeholder="Zustand (sehr gut, neuwertig?), Größe, Marke..." class="w-full border rounded-lg px-3 py-2 border-slate-300 focus:ring-2 focus:ring-indigo-500"></textarea>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
@@ -227,6 +233,16 @@
 
     const formatEUR = (num) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(num);
 
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const msg = document.getElementById('toast-message');
+      msg.innerText = message;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
     function saveToStorage() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
       calculateTotals();
@@ -320,16 +336,24 @@
             </div>
           </div>
           
-          <div class="p-3 border-t bg-slate-50 flex items-center justify-between">
-            ${!item.isSold ? `
-              <button onclick="openAdHelper('${item.id}')" title="Als Kleinanzeige vorbereiten" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-bullhorn text-amber-600"></i> Kleinanzeige
-              </button>
-            ` : '<span></span>'}
+          <div class="p-3 border-t bg-slate-50 flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-1.5">
+              ${!item.isSold ? `
+                <!-- WhatsApp Verkauf-Button -->
+                <button onclick="copyWhatsAppMessage('${item.id}', this)" title="Kurznachricht für WhatsApp kopieren" class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                  <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> WhatsApp
+                </button>
 
-            <div class="flex items-center gap-1">
-              <button onclick="editItem('${item.id}')" class="text-slate-500 hover:text-indigo-600 p-1.5 text-sm font-medium"><i class="fa-regular fa-pen-to-square"></i></button>
-              <button onclick="deleteItem('${item.id}')" class="text-slate-400 hover:text-rose-500 p-1.5 text-sm font-medium"><i class="fa-regular fa-trash-can"></i></button>
+                <!-- Kleinanzeigen Button -->
+                <button onclick="openAdHelper('${item.id}')" title="Als Kleinanzeige vorbereiten" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                  <i class="fa-solid fa-bullhorn text-amber-600"></i> Kleinanzeige
+                </button>
+              ` : '<span></span>'}
+            </div>
+
+            <div class="flex items-center gap-1 ml-auto">
+              <button onclick="editItem('${item.id}')" title="Bearbeiten" class="text-slate-500 hover:text-indigo-600 p-1.5 text-sm font-medium"><i class="fa-regular fa-pen-to-square"></i></button>
+              <button onclick="deleteItem('${item.id}')" title="Löschen" class="text-slate-400 hover:text-rose-500 p-1.5 text-sm font-medium"><i class="fa-regular fa-trash-can"></i></button>
             </div>
           </div>
         `;
@@ -403,184 +427,4 @@
       const desc = document.getElementById('item-desc').value;
       const buyPrice = parseFloat(document.getElementById('item-buy-price').value) || 0;
       const date = document.getElementById('item-date').value;
-      const adLink = document.getElementById('item-ad-link').value;
-      const isSold = document.getElementById('item-is-sold').checked;
-      const sellPrice = isSold ? (parseFloat(document.getElementById('item-sell-price').value) || 0) : 0;
-      const image = document.getElementById('item-image-base64').value;
-
-      if (id) {
-        const index = items.findIndex(i => i.id === id);
-        if (index !== -1) {
-          items[index] = { ...items[index], title, desc, buyPrice, date, adLink, isSold, sellPrice, image: image || items[index].image };
-        }
-      } else {
-        items.push({
-          id: Date.now().toString(),
-          title, desc, buyPrice, date, adLink, isSold, sellPrice, image
-        });
-      }
-
-      saveToStorage();
-      closeModal();
-    }
-
-    function editItem(id) {
-      const item = items.find(i => i.id === id);
-      if (!item) return;
-
-      openModal();
-      document.getElementById('modal-title').innerText = 'Artikel bearbeiten';
-      document.getElementById('item-id').value = item.id;
-      document.getElementById('item-title').value = item.title;
-      document.getElementById('item-desc').value = item.desc || '';
-      document.getElementById('item-buy-price').value = item.buyPrice;
-      document.getElementById('item-date').value = item.date || '';
-      document.getElementById('item-ad-link').value = item.adLink || '';
-      document.getElementById('item-is-sold').checked = item.isSold;
-      document.getElementById('item-sell-price').value = item.sellPrice || '';
-
-      if (item.image) {
-        document.getElementById('item-image-base64').value = item.image;
-        document.getElementById('image-preview').src = item.image;
-        document.getElementById('image-preview-wrapper').classList.remove('hidden');
-      }
-
-      toggleSoldInputs();
-    }
-
-    function deleteItem(id) {
-      if (confirm('Möchtest du diesen Artikel wirklich löschen?')) {
-        items = items.filter(i => i.id !== id);
-        saveToStorage();
-      }
-    }
-
-    // ==========================================
-    // KLEINANZEIGEN HELFER LOGIK (inkl. Treuchtlingen)
-    // ==========================================
-
-    const adModal = document.getElementById('ad-helper-modal');
-
-    function openAdHelper(id) {
-      const item = items.find(i => i.id === id);
-      if (!item) return;
-
-      document.getElementById('ad-helper-title').value = item.title;
-
-      // Verkaufsfertiger Text mit Abholung in Treuchtlingen
-      const generatedText = 
-`Hallo zusammen,
-
-wir verkaufen hier folgenden Artikel aus unserem Kinderhaushalt:
-${item.title}
-
-Beschreibung / Zustand:
-${item.desc || 'Sehr gepflegter Zustand.'}
-
-Wir sind ein tierfreier Nichtraucherhaushalt.
-Abholung in Treuchtlingen bevorzugt (Barzahlung oder PayPal Freunde vor Ort). Versand ist bei Kostenübernahme ebenfalls möglich.
-
-Da es sich um einen Privatverkauf handelt, erfolgt der Verkauf unter Ausschluss jeglicher Sachmangelhaftung oder Rücknahme.`;
-
-      document.getElementById('ad-helper-desc').value = generatedText;
-
-      const imgArea = document.getElementById('ad-helper-image-area');
-      if (item.image) {
-        imgArea.classList.remove('hidden');
-        document.getElementById('ad-helper-img').src = item.image;
-        const dlBtn = document.getElementById('ad-helper-download-btn');
-        dlBtn.href = item.image;
-        dlBtn.download = `${item.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.jpg`;
-      } else {
-        imgArea.classList.add('hidden');
-      }
-
-      adModal.classList.remove('hidden');
-      adModal.classList.add('flex');
-    }
-
-    function closeAdModal() {
-      adModal.classList.add('hidden');
-      adModal.classList.remove('flex');
-    }
-
-    function copyToClipboard(elementId, btnElement) {
-      const input = document.getElementById(elementId);
-      input.select();
-      navigator.clipboard.writeText(input.value).then(() => {
-        const originalText = btnElement.innerHTML;
-        btnElement.innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i> Kopiert!`;
-        setTimeout(() => {
-          btnElement.innerHTML = originalText;
-        }, 2000);
-      });
-    }
-
-    // ==========================================
-    // BACKUP & RESTORE
-    // ==========================================
-
-    function exportBackup() {
-      if (items.length === 0) {
-        alert('Es sind noch keine Artikel zum Exportieren vorhanden.');
-        return;
-      }
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(items, null, 2));
-      const downloadAnchor = document.createElement('a');
-      const dateStr = new Date().toISOString().split('T')[0];
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `kidsgear_backup_${dateStr}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    }
-
-    function triggerImport() {
-      document.getElementById('import-file-input').click();
-    }
-
-    function handleImportFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const importedData = JSON.parse(e.target.result);
-          if (!Array.isArray(importedData)) throw new Error('Ungültiges Datenformat.');
-
-          const shouldMerge = confirm(
-            `${importedData.length} Artikel gefunden!\n\n` +
-            `• OK = Hinzufügen (Mergen)\n` +
-            `• Abbrechen = Vorhandenes komplett ERSETZEN`
-          );
-
-          if (shouldMerge) {
-            const existingIds = new Set(items.map(i => i.id));
-            let addedCount = 0;
-            importedData.forEach(item => {
-              if (!existingIds.has(item.id)) {
-                items.push(item);
-                addedCount++;
-              }
-            });
-            alert(`Erfolg: ${addedCount} Artikel hinzugefügt!`);
-          } else {
-            items = importedData;
-            alert('Erfolg: Alle Daten wurden ersetzt!');
-          }
-          saveToStorage();
-        } catch (err) {
-          alert('Fehler: ' + err.message);
-        } finally {
-          event.target.value = '';
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    calculateTotals();
-    renderItems();
-  </script>
-</body>
-</html>
+      const adLink = document.getElementById
